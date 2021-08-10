@@ -18,8 +18,8 @@ namespace GameLogic
         public Game(int i_ColumnNum, int i_RowNum, bool i_IsAgainstComputer)
         {
             m_Board = new Board(i_ColumnNum, i_RowNum);
-            m_Player1 = new Player('X', false, "Player1");
-            m_Player2 = new Player('O', i_IsAgainstComputer, "Player2");
+            m_Player1 = new Player(Player.PlayerType.Player1, false);
+            m_Player2 = new Player(Player.PlayerType.Player2, i_IsAgainstComputer);
             m_CurrentPlayerType = Player.PlayerType.Player1;
             m_WinnerSign = ' ';
         }

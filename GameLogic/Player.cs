@@ -10,21 +10,22 @@ namespace GameLogic
     {
         public enum PlayerType
         {
-            Player1 = 'O',
-            Player2 = 'X'
+            Player1 = 1,
+            Player2 = 2
         }
 
-        char m_Sign;
-        int m_Score;
-        bool m_IsComputer;
-        string m_Name;
+        private PlayerType m_PlayerType;
+        private int m_Score;
+        private char m_Sign;
+        private bool m_IsComputer;
+      
 
-        public Player(char i_Sign, bool i_IsComputer, string i_Name)
+        public Player(Player.PlayerType i_PlayerType, bool i_IsComputer)
         {
-            m_Sign = i_Sign;
-            m_Score = 0;
-            m_IsComputer = i_IsComputer;
-            m_Name = i_Name;
+            this.m_PlayerType = i_PlayerType;
+            this.m_Score = 0;
+            this.m_Sign = i_PlayerType == PlayerType.Player1 ? 'X' : 'O';
+            this.m_IsComputer = i_IsComputer;
         }
 
         public char Sign
@@ -32,10 +33,6 @@ namespace GameLogic
             get
             {
                 return m_Sign;
-            }
-            set
-            {
-                m_Sign = value;
             }
         }
 
@@ -51,15 +48,23 @@ namespace GameLogic
             }
         }
 
-        public string Name
+        public PlayerType Type
         {
             get
             {
-                return m_Name;
+                return m_PlayerType;
             }
             set
             {
-                m_Name = value;
+                m_PlayerType = value;
+            }
+        }
+
+        public String Name
+        {
+            get
+            {
+                return m_PlayerType.ToString();
             }
         }
     }

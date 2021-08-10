@@ -67,5 +67,13 @@ namespace GameLogic
                 return m_PlayerType.ToString();
             }
         }
+
+        public bool IsComputer
+        {
+            get
+            {
+                return m_IsComputer;
+            }
+        }
     }
 }

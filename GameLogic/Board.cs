@@ -167,5 +167,27 @@ namespace GameLogic
         {
             return m_cols;
         }
+
+        public void AddToRandomColumn(char i_Sign)
+        {
+            //Save all available columns
+            List<int> available = new List<int>();
+            for(int i = 0; i < m_AvailableIndexInColumn.Length; i++)
+            {
+                if(m_AvailableIndexInColumn[i] > -1)
+                {
+                    available.Add(i+1);
+                }
+            }
+
+            if(available.Count > 0)
+            {
+                //Get random index of available columns
+                Random random = new Random();
+                int randomIndex = random.Next(0, available.Count);
+                //Send random column index
+                AddToColumn(available.ElementAt(randomIndex), i_Sign);
+            }
+        }
     }
 }

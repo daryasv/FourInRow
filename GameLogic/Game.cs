@@ -42,6 +42,10 @@ namespace GameLogic
                     currentPlayer.Score++;
                     m_WinnerSign = m_Board.GetWinnerSign();
                 }
+                if (IsBoardFull())
+                {
+                    m_WinnerSign = m_Player1.Score > m_Player2.Score ? m_Player1.Sign : m_Player2.Sign;
+                }
 
                 switchPlayer();
             }

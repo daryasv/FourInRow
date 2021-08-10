@@ -53,13 +53,6 @@ namespace ConsoleUserInterface
                             isGameOver = true;
                             break;
                         }
-
-                        if(game.IsBoardFull())
-                        {
-                            Console.WriteLine("FULL");
-                            isGameOver = true;
-                            break;
-                        }
                     }
                 }
                 else

@@ -51,8 +51,8 @@ namespace GameLogic
         {
             bool addedSuccessfully = false;
 
-            //TODO : validation on column - exception not catched when input out of range
-            if (m_AvailableIndexInColumn[i_ColIndex - 1] > -1)
+            
+            if (m_AvailableIndexInColumn.Length >= i_ColIndex && m_AvailableIndexInColumn[i_ColIndex - 1] > -1)
             {
                 int nextAvailableIndexInCol = m_AvailableIndexInColumn[i_ColIndex - 1];
 

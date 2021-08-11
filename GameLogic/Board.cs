@@ -50,7 +50,6 @@ namespace GameLogic
         public bool AddToColumn(int i_ColIndex, char i_Sign) // return true if success
         {
             bool addedSuccessfully = false;
-
             
             if (m_AvailableIndexInColumn.Length >= i_ColIndex && m_AvailableIndexInColumn[i_ColIndex - 1] > -1)
             {
@@ -87,7 +86,8 @@ namespace GameLogic
 
         private bool checkForWin(int i_ColIndex, int i_RowIndex, char i_Sign)
         {
-            return isHorizontalSequence(i_ColIndex, i_Sign) || isVerticalSequence(i_RowIndex, i_Sign);
+            return isHorizontalSequence(i_ColIndex, i_Sign) || isVerticalSequence(i_RowIndex, i_Sign) ||
+                isDecreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_Sign) || isIncreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_Sign);
         }
 
         public char GetCellChar(int i_ColIndex, int i_RowIndex)
@@ -147,9 +147,74 @@ namespace GameLogic
             return isThereSequence;
         }
 
-        private void isDiagonalSequence(int i_ColIndex, int i_RowIndex, char i_Sign)
+        private bool isDecreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, char i_Sign)
         {
-            //TODO
+            int startOfDiagnolCheckColumn = i_ColIndex;
+            int startOfDiagnolCheckRow = i_RowIndex;
+            int sequenceSize = 0;
+            bool isSequence = false;
+
+            while (startOfDiagnolCheckColumn > 0 && startOfDiagnolCheckRow > 0)
+            {
+                startOfDiagnolCheckColumn--;
+                startOfDiagnolCheckRow--;
+            }
+
+            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows; i++)
+            {
+                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_Sign)
+                {
+                    sequenceSize++;
+                } else
+                {
+                    sequenceSize = 0;
+                }
+
+                if(sequenceSize == 4)
+                {
+                    isSequence = true;
+                    break;
+                }
+
+                startOfDiagnolCheckRow++;
+            }
+
+            return isSequence;
+        }
+        
+        private bool isIncreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, char i_Sign)
+        {
+            int startOfDiagnolCheckColumn = i_ColIndex;
+            int startOfDiagnolCheckRow = i_RowIndex;
+            int sequenceSize = 0;
+            bool isSequence = false;
+
+            while (startOfDiagnolCheckColumn > 0 && startOfDiagnolCheckRow <= m_rows)
+            {
+                startOfDiagnolCheckColumn--;
+                startOfDiagnolCheckRow++;
+            }
+
+            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows; i++)
+            {
+                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_Sign)
+                {
+                    sequenceSize++;
+                } else
+                {
+                    sequenceSize = 0;
+                }
+
+                if(sequenceSize == 4)
+                {
+                    isSequence = true;
+                    break;
+                }
+
+                startOfDiagnolCheckRow--;
+            }
+
+            return isSequence;
         }
 
         public bool IsCellFull(int i_ColNum, int i_RowNum)
@@ -172,6 +237,7 @@ namespace GameLogic
         {
             //Save all available columns
             List<int> available = new List<int>();
+
             for(int i = 0; i < m_AvailableIndexInColumn.Length; i++)
             {
                 if(m_AvailableIndexInColumn[i] > -1)

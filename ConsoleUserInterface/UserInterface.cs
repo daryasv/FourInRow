@@ -1,20 +1,18 @@
 ﻿using System;
 using GameLogic;
+using Ex02.ConsoleUtils;
 
 namespace ConsoleUserInterface
 {
     class UserInterface
     {
-        Game game;
-
-
         public void RunGame()
         {
             int columnsNum;
             int rowsNum;
             bool isAgainstComputer;
             bool isGameOver = false;
-            bool isQuit;
+            bool isQuit = false;
 
             Console.WriteLine("Welcome!");
             Console.WriteLine("How Many Columns?");
@@ -67,7 +65,7 @@ namespace ConsoleUserInterface
 
             for (int i = 0; i < i_Board.GetColumnSize(); i++)
             {
-                Console.Write("  {0}  ", i);
+                Console.Write("  {0}  ", i + 1);
             }
 
             for (int i = 0; i < i_Board.GetRowSize(); i++)
@@ -117,7 +115,6 @@ namespace ConsoleUserInterface
             int num = 0;
             string input = Console.ReadLine();
 
-
             while (!Int32.TryParse(input, out num) || num > 8 || num < 4)
             {
                 Console.WriteLine("Invalid Input - expect to get a number between 4 and 8");
@@ -126,7 +123,5 @@ namespace ConsoleUserInterface
 
             return num;
         }
-
-
     }
 }

@@ -90,5 +90,10 @@ namespace GameLogic
         {
             return m_Board.IsBoardFull();
         }
+
+        public Player.PlayerType getCurrentPlayerType()
+        {
+            return m_CurrentPlayer.Type;
+        }
     }
 }

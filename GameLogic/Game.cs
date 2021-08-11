@@ -32,33 +32,36 @@ namespace GameLogic
             m_WinnerType = WinnerType.None;
         }
 
+        public void init()
+        {
+            m_CurrentPlayer = m_Player1;
+            m_WinnerType = WinnerType.None;
+            m_Board.InitBoard();
+        }
 
         public Board GetBoard()
         {
             return this.m_Board;
         }
 
-        public Board MakeMove(int i_ColNum, out Board.MoveResponse io_MoveResponse)
+        public void MakeMove(int i_ColNum, out Board.MoveResponse io_MoveResponse)
         {
             io_MoveResponse = m_Board.AddToColumn(i_ColNum, m_CurrentPlayer.Type);
-
             if (io_MoveResponse == Board.MoveResponse.Success)
             {
-                if (!CheckIfEndGame() && m_Player2.IsComputer)
+                if (!checkIfEndGame() && m_Player2.IsComputer)
                 {
                     m_CurrentPlayer = m_Player2;
                     //get random move from moves that left to play
                     m_Board.AddToRandomColumn(m_CurrentPlayer.Type);
-                    CheckIfEndGame();
+                    checkIfEndGame();
                 }
 
                 switchPlayer();
             }
-
-            return m_Board;
         }
 
-        private bool CheckIfEndGame()
+        private bool checkIfEndGame()
         {
             bool ended = false;
             if (m_Board.IsWon())
@@ -81,7 +84,7 @@ namespace GameLogic
             m_CurrentPlayer = m_CurrentPlayer.Type == Player.PlayerType.Player1 ? m_Player2 : m_Player1;
         }
 
-        public WinnerType getWinner()
+        public WinnerType GetWinner()
         {
             return m_WinnerType;
         }
@@ -91,9 +94,30 @@ namespace GameLogic
             return m_Board.IsBoardFull();
         }
 
-        public Player.PlayerType getCurrentPlayerType()
+        public Player.PlayerType GetCurrentPlayerType()
         {
             return m_CurrentPlayer.Type;
+        }
+
+        public void PlayerQuit()
+        {
+            if (m_CurrentPlayer == m_Player1)
+            {
+                m_Player2.Score++;
+            } else
+            {
+                m_Player1.Score++;
+            }
+        }
+
+        public int GetFirstPlayerScore()
+        {
+            return m_Player1.Score;
+        }
+
+        public int GetSecondPlayerScore()
+        {
+            return m_Player2.Score;
         }
     }
 }

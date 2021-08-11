@@ -15,37 +15,35 @@ namespace GameLogic
             ColumnIsFull
         }
 
-        int m_rows;
-        int m_cols;
+        int m_Rows;
+        int m_Columns;
         int[,] m_BoardMatrix;
         int[] m_AvailableIndexInColumn;
         bool m_Won;
 
         public Board(int i_ColNum, int i_RowNum)
         {
-            m_rows = i_RowNum;
-            m_cols = i_ColNum;
-            m_Won = false;
+            m_Rows = i_RowNum;
+            m_Columns = i_ColNum;
+            m_BoardMatrix = new int[m_Columns, m_Rows];
+            m_AvailableIndexInColumn = new int[m_Columns];
             InitBoard();
         }
 
         public void InitBoard()
         {
-            m_BoardMatrix = new int[m_cols, m_rows];
             m_Won = false;
-
-            for (int i = 0; i < m_cols; i++)
+            for (int i = 0; i < m_Columns; i++)
             {
-                for (int j = 0; j < m_rows; j++)
+                for (int j = 0; j < m_Rows; j++)
                 {
                     m_BoardMatrix[i, j] = 0;
                 }
             }
 
-            m_AvailableIndexInColumn = new int[m_cols];
-            for (int i = 0; i < m_cols; i++)
+            for (int i = 0; i < m_Columns; i++)
             {
-                m_AvailableIndexInColumn[i] = m_rows - 1;
+                m_AvailableIndexInColumn[i] = m_Rows - 1;
             }
         }
 
@@ -80,7 +78,7 @@ namespace GameLogic
         {
             bool isBoardFull = true;
 
-            for (int i = 0; i < m_cols; i++)
+            for (int i = 0; i < m_Columns; i++)
             {
                 if (m_AvailableIndexInColumn[i] != -1)
                 {
@@ -109,7 +107,7 @@ namespace GameLogic
             int sequenceSize = 0;
             bool isThereSequence = false;
 
-            for (int i = 0; i < m_rows; i++)
+            for (int i = 0; i < m_Rows; i++)
             {
                 if (m_BoardMatrix[i_ColIndex, i] == i_PlayerI)
                 {
@@ -135,7 +133,7 @@ namespace GameLogic
             int sequenceSize = 0;
             bool isThereSequence = false;
 
-            for (int i = 0; i < m_cols; i++)
+            for (int i = 0; i < m_Columns; i++)
             {
                 if (m_BoardMatrix[i, i_RowIndex] == i_PlayerI)
                 {
@@ -169,7 +167,7 @@ namespace GameLogic
                 startOfDiagnolCheckRow--;
             }
 
-            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows; i++)
+            for (int i = startOfDiagnolCheckColumn; i < m_Columns && startOfDiagnolCheckRow < m_Rows; i++)
             {
                 if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_PlayerI)
                 {
@@ -199,13 +197,13 @@ namespace GameLogic
             int sequenceSize = 0;
             bool isSequence = false;
 
-            while (startOfDiagnolCheckColumn > 0 && startOfDiagnolCheckRow <= m_rows)
+            while (startOfDiagnolCheckColumn > 0 && startOfDiagnolCheckRow <= m_Rows)
             {
                 startOfDiagnolCheckColumn--;
                 startOfDiagnolCheckRow++;
             }
 
-            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows && startOfDiagnolCheckRow >= 0; i++)
+            for (int i = startOfDiagnolCheckColumn; i < m_Columns && startOfDiagnolCheckRow < m_Rows && startOfDiagnolCheckRow >= 0; i++)
             {
                 if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_PlayerI)
                 {
@@ -236,12 +234,12 @@ namespace GameLogic
 
         public int GetRowSize()
         {
-            return m_rows;
+            return m_Rows;
         }
 
         public int GetColumnSize()
         {
-            return m_cols;
+            return m_Columns;
         }
 
         public void AddToRandomColumn(Player.PlayerType i_PlayerType)

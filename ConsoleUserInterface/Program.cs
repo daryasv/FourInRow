@@ -7,6 +7,5 @@
             UserInterface userInterface = new UserInterface();
             userInterface.RunGame();
         }
-
     }
 }

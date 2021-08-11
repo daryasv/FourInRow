@@ -8,30 +8,37 @@ namespace GameLogic
 {
     public class Board
     {
+        public enum MoveResponse
+        {
+            Success,
+            OutOfRange,
+            ColumnIsFull
+        }
+
         int m_rows;
         int m_cols;
-        char[,] m_BoardMatrix;
+        int[,] m_BoardMatrix;
         int[] m_AvailableIndexInColumn;
-        char m_WinnerSign;
+        bool m_Won;
 
         public Board(int i_ColNum, int i_RowNum)
         {
             m_rows = i_RowNum;
             m_cols = i_ColNum;
-            m_WinnerSign = ' ';
+            m_Won = false;
             InitBoard();
         }
 
         public void InitBoard()
         {
-            m_BoardMatrix = new char[m_cols, m_rows];
-            m_WinnerSign = ' ';
+            m_BoardMatrix = new int[m_cols, m_rows];
+            m_Won = false;
 
             for (int i = 0; i < m_cols; i++)
             {
                 for (int j = 0; j < m_rows; j++)
                 {
-                    m_BoardMatrix[i, j] = ' ';
+                    m_BoardMatrix[i, j] = 0;
                 }
             }
 
@@ -42,30 +49,31 @@ namespace GameLogic
             }
         }
 
-        public char GetWinnerSign()
+        public MoveResponse AddToColumn(int i_ColIndex, Player.PlayerType i_PlayerType) // return true if success
         {
-            return m_WinnerSign;
-        }
-
-        public bool AddToColumn(int i_ColIndex, char i_Sign) // return true if success
-        {
-            bool addedSuccessfully = false;
-            
-            if (m_AvailableIndexInColumn.Length >= i_ColIndex && m_AvailableIndexInColumn[i_ColIndex - 1] > -1)
+            MoveResponse moveResponse = MoveResponse.Success;
+            if (m_AvailableIndexInColumn.Length < i_ColIndex)
+            {
+                moveResponse = MoveResponse.OutOfRange;
+            }
+            else if (m_AvailableIndexInColumn[i_ColIndex - 1] < 0)
+            {
+                moveResponse = MoveResponse.ColumnIsFull;
+            }
+            else
             {
                 int nextAvailableIndexInCol = m_AvailableIndexInColumn[i_ColIndex - 1];
 
-                m_BoardMatrix[i_ColIndex - 1, nextAvailableIndexInCol] = i_Sign;
-                if (checkForWin(i_ColIndex - 1, nextAvailableIndexInCol, i_Sign))
+                m_BoardMatrix[i_ColIndex - 1, nextAvailableIndexInCol] = (int)i_PlayerType;
+                if (checkForWin(i_ColIndex - 1, nextAvailableIndexInCol, (int)i_PlayerType))
                 {
-                    m_WinnerSign = i_Sign;
+                    m_Won = true;
                 }
 
                 m_AvailableIndexInColumn[i_ColIndex - 1]--;
-                addedSuccessfully = true;
             }
 
-            return addedSuccessfully;
+            return moveResponse;
         }
 
         public bool IsBoardFull()
@@ -84,25 +92,26 @@ namespace GameLogic
             return isBoardFull;
         }
 
-        private bool checkForWin(int i_ColIndex, int i_RowIndex, char i_Sign)
+        private bool checkForWin(int i_ColIndex, int i_RowIndex, int i_PlayerI)
         {
-            return isHorizontalSequence(i_ColIndex, i_Sign) || isVerticalSequence(i_RowIndex, i_Sign) ||
-                isDecreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_Sign) || isIncreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_Sign);
+            return isHorizontalSequence(i_ColIndex, i_PlayerI) || isVerticalSequence(i_RowIndex, i_PlayerI) ||
+                isDecreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_PlayerI) || isIncreasingDiagonalSequence(i_ColIndex, i_RowIndex, i_PlayerI);
         }
 
-        public char GetCellChar(int i_ColIndex, int i_RowIndex)
+        public Player.PlayerType GetCellPlayerType(int i_ColIndex, int i_RowIndex)
         {
-            return m_BoardMatrix[i_ColIndex, i_RowIndex];
+            Player.PlayerType player = (Player.PlayerType)m_BoardMatrix[i_ColIndex, i_RowIndex];
+            return player;
         }
 
-        private bool isHorizontalSequence(int i_ColIndex, char i_Sign)
+        private bool isHorizontalSequence(int i_ColIndex, int i_PlayerI)
         {
             int sequenceSize = 0;
             bool isThereSequence = false;
 
             for (int i = 0; i < m_rows; i++)
             {
-                if (m_BoardMatrix[i_ColIndex, i] == i_Sign)
+                if (m_BoardMatrix[i_ColIndex, i] == i_PlayerI)
                 {
                     sequenceSize++;
                 }
@@ -121,14 +130,14 @@ namespace GameLogic
             return isThereSequence;
         }
 
-        private bool isVerticalSequence(int i_RowIndex, char i_Sign)
+        private bool isVerticalSequence(int i_RowIndex, int i_PlayerI)
         {
             int sequenceSize = 0;
             bool isThereSequence = false;
 
             for (int i = 0; i < m_cols; i++)
             {
-                if (m_BoardMatrix[i, i_RowIndex] == i_Sign)
+                if (m_BoardMatrix[i, i_RowIndex] == i_PlayerI)
                 {
                     sequenceSize++;
                 }
@@ -147,7 +156,7 @@ namespace GameLogic
             return isThereSequence;
         }
 
-        private bool isDecreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, char i_Sign)
+        private bool isDecreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, int i_PlayerI)
         {
             int startOfDiagnolCheckColumn = i_ColIndex;
             int startOfDiagnolCheckRow = i_RowIndex;
@@ -162,15 +171,16 @@ namespace GameLogic
 
             for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows; i++)
             {
-                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_Sign)
+                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_PlayerI)
                 {
                     sequenceSize++;
-                } else
+                }
+                else
                 {
                     sequenceSize = 0;
                 }
 
-                if(sequenceSize == 4)
+                if (sequenceSize == 4)
                 {
                     isSequence = true;
                     break;
@@ -181,8 +191,8 @@ namespace GameLogic
 
             return isSequence;
         }
-        
-        private bool isIncreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, char i_Sign)
+
+        private bool isIncreasingDiagonalSequence(int i_ColIndex, int i_RowIndex, int i_PlayerI)
         {
             int startOfDiagnolCheckColumn = i_ColIndex;
             int startOfDiagnolCheckRow = i_RowIndex;
@@ -195,17 +205,18 @@ namespace GameLogic
                 startOfDiagnolCheckRow++;
             }
 
-            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows; i++)
+            for (int i = startOfDiagnolCheckColumn; i < m_cols && startOfDiagnolCheckRow < m_rows && startOfDiagnolCheckRow >= 0; i++)
             {
-                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_Sign)
+                if (m_BoardMatrix[i, startOfDiagnolCheckRow] == i_PlayerI)
                 {
                     sequenceSize++;
-                } else
+                }
+                else
                 {
                     sequenceSize = 0;
                 }
 
-                if(sequenceSize == 4)
+                if (sequenceSize == 4)
                 {
                     isSequence = true;
                     break;
@@ -219,7 +230,7 @@ namespace GameLogic
 
         public bool IsCellFull(int i_ColNum, int i_RowNum)
         {
-            return m_BoardMatrix[i_ColNum - 1, i_RowNum - 1] == ' ';
+            return m_BoardMatrix[i_ColNum - 1, i_RowNum - 1] == 0;
         }
 
 
@@ -233,27 +244,32 @@ namespace GameLogic
             return m_cols;
         }
 
-        public void AddToRandomColumn(char i_Sign)
+        public void AddToRandomColumn(Player.PlayerType i_PlayerType)
         {
             //Save all available columns
             List<int> available = new List<int>();
 
-            for(int i = 0; i < m_AvailableIndexInColumn.Length; i++)
+            for (int i = 0; i < m_AvailableIndexInColumn.Length; i++)
             {
-                if(m_AvailableIndexInColumn[i] > -1)
+                if (m_AvailableIndexInColumn[i] > -1)
                 {
-                    available.Add(i+1);
+                    available.Add(i + 1);
                 }
             }
 
-            if(available.Count > 0)
+            if (available.Count > 0)
             {
                 //Get random index of available columns
                 Random random = new Random();
                 int randomIndex = random.Next(0, available.Count);
                 //Send random column index
-                AddToColumn(available.ElementAt(randomIndex), i_Sign);
+                AddToColumn(available.ElementAt(randomIndex), i_PlayerType);
             }
+        }
+
+        public bool IsWon()
+        {
+            return m_Won;
         }
     }
 }

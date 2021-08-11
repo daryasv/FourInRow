@@ -39,23 +39,35 @@ namespace ConsoleUserInterface
                 }
                 else if (isValidColumsNumber(userChoice))
                 {
-                    if(Int32.TryParse(userChoice.KeyChar.ToString(), out int colIndex))
+                    if (Int32.TryParse(userChoice.KeyChar.ToString(), out int colIndex))
                     {
-                        Board board = game.MakeMove(colIndex);
-                        Ex02.ConsoleUtils.Screen.Clear();
-                        PrintBoard(board);
-
-                        if(game.getWinner() != "")
+                        Board board = game.MakeMove(colIndex, out Board.MoveResponse moveResponse);
+                        if (moveResponse == Board.MoveResponse.Success)
                         {
-                            Console.WriteLine(game.getWinner());
-                            isGameOver = true;
-                            break;
+                            Ex02.ConsoleUtils.Screen.Clear();
+                            PrintBoard(board);
+
+                            if (game.getWinner() != Game.WinnerType.None)
+                            {
+                                //todo: nicer prints
+                                Console.WriteLine(game.getWinner());
+                                isGameOver = true;
+                                break;
+                            }
+                        }
+                        else if (moveResponse == Board.MoveResponse.OutOfRange)
+                        {
+                            Console.WriteLine("\n Selected column is out of range");
+                        }
+                        else if (moveResponse == Board.MoveResponse.ColumnIsFull)
+                        {
+                            Console.WriteLine("\n Selected column is already full");
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Key");
+                    Console.WriteLine("\n Invalid column number");
                 }
             }
         }
@@ -73,7 +85,7 @@ namespace ConsoleUserInterface
                 Console.WriteLine();
                 for (int j = 0; j < i_Board.GetColumnSize(); j++)
                 {
-                    Console.Write("| {0}  ", i_Board.GetCellChar(j, i));
+                    Console.Write("| {0}  ", GetPlayerSign(i_Board.GetCellPlayerType(j, i)));
                 }
 
                 Console.Write("|");
@@ -86,7 +98,22 @@ namespace ConsoleUserInterface
 
         }
 
+        private char GetPlayerSign(Player.PlayerType i_PlayerType)
+        {
+            if (i_PlayerType == Player.PlayerType.Player1)
+            {
+                return 'X';
+            }
+            else if (i_PlayerType == Player.PlayerType.Player2)
+            {
+                return 'O';
+            }
+            else
+            {
+                return ' ';
+            }
 
+        }
 
         //TODO : implement me
         private bool isValidColumsNumber(ConsoleKeyInfo input)

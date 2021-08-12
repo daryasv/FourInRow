@@ -18,7 +18,6 @@ namespace GameLogic
         private int m_Score;
         private bool m_IsComputer;
 
-
         public Player(Player.PlayerType i_PlayerType, bool i_IsComputer)
         {
             this.m_PlayerType = i_PlayerType;

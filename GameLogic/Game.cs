@@ -17,11 +17,25 @@ namespace GameLogic
             None
         }
 
-        Board m_Board;
-        Player m_Player1;
-        Player m_Player2;
-        Player m_CurrentPlayer;
-        WinnerType m_WinnerType;
+        private Board m_Board;
+        private Player m_Player1;
+        private Player m_Player2;
+        private Player m_CurrentPlayer;
+        private WinnerType m_WinnerType;
+        public Board Board
+        {
+            get
+            {
+                return m_Board;
+            }
+        }
+        public WinnerType winnerType
+        {
+            get
+            {
+                return m_WinnerType;
+            }
+        }
 
         public Game(int i_ColumnNum, int i_RowNum, bool i_IsAgainstComputer)
         {
@@ -32,19 +46,14 @@ namespace GameLogic
             m_WinnerType = WinnerType.None;
         }
 
-        public void init()
+        public void Init()
         {
             m_CurrentPlayer = m_Player1;
             m_WinnerType = WinnerType.None;
             m_Board.InitBoard();
         }
 
-        public Board GetBoard()
-        {
-            return this.m_Board;
-        }
-
-        public void MakeMove(int i_ColNum, out Board.MoveResponse io_MoveResponse)
+        public Board MakeMove(int i_ColNum, out Board.MoveResponse io_MoveResponse)
         {
             io_MoveResponse = m_Board.AddToColumn(i_ColNum, m_CurrentPlayer.Type);
             if (io_MoveResponse == Board.MoveResponse.Success)
@@ -59,18 +68,20 @@ namespace GameLogic
 
                 switchPlayer();
             }
+
+            return m_Board;
         }
 
         private bool checkIfEndGame()
         {
             bool ended = false;
-            if (m_Board.IsWon())
+            if (m_Board.isWon)
             {
                 m_CurrentPlayer.Score++;
                 m_WinnerType = m_CurrentPlayer.Type == Player.PlayerType.Player1 ? WinnerType.Player1 : WinnerType.Player2;
                 ended = true;
             }
-            else if (IsBoardFull())
+            else if (isBoardFull())
             {
                 m_WinnerType = WinnerType.Draw;
                 ended = true;
@@ -84,12 +95,7 @@ namespace GameLogic
             m_CurrentPlayer = m_CurrentPlayer.Type == Player.PlayerType.Player1 ? m_Player2 : m_Player1;
         }
 
-        public WinnerType GetWinner()
-        {
-            return m_WinnerType;
-        }
-
-        public bool IsBoardFull()
+        private bool isBoardFull()
         {
             return m_Board.IsBoardFull();
         }

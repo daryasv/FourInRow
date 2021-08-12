@@ -15,11 +15,34 @@ namespace GameLogic
             ColumnIsFull
         }
 
-        int m_Rows;
-        int m_Columns;
-        int[,] m_BoardMatrix;
-        int[] m_AvailableIndexInColumn;
-        bool m_Won;
+        private int m_Rows;
+        private int m_Columns;
+        private int[,] m_BoardMatrix;
+        private int[] m_AvailableIndexInColumn;
+        private bool m_Won;
+        public int Rows
+        {
+            get
+            {
+                return m_Rows;
+            }
+        }
+
+        public int Columns
+        {
+            get
+            {
+                return m_Columns;
+            }
+        }
+
+        public bool isWon
+        {
+            get
+            {
+                return m_Won;
+            }
+        }
 
         public Board(int i_ColNum, int i_RowNum)
         {
@@ -50,6 +73,7 @@ namespace GameLogic
         public MoveResponse AddToColumn(int i_ColIndex, Player.PlayerType i_PlayerType) // return true if success
         {
             MoveResponse moveResponse = MoveResponse.Success;
+
             if (m_AvailableIndexInColumn.Length < i_ColIndex)
             {
                 moveResponse = MoveResponse.OutOfRange;
@@ -231,17 +255,6 @@ namespace GameLogic
             return m_BoardMatrix[i_ColNum - 1, i_RowNum - 1] == 0;
         }
 
-
-        public int GetRowSize()
-        {
-            return m_Rows;
-        }
-
-        public int GetColumnSize()
-        {
-            return m_Columns;
-        }
-
         public void AddToRandomColumn(Player.PlayerType i_PlayerType)
         {
             //Save all available columns
@@ -263,11 +276,6 @@ namespace GameLogic
                 //Send random column index
                 AddToColumn(available.ElementAt(randomIndex), i_PlayerType);
             }
-        }
-
-        public bool IsWon()
-        {
-            return m_Won;
         }
     }
 }

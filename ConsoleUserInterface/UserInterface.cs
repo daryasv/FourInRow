@@ -4,12 +4,13 @@ using Ex02.ConsoleUtils;
 
 namespace ConsoleUserInterface
 {
-    class UserInterface
+    public class UserInterface
     {
         Game m_Game;
 
         public void RunGame()
         {
+            Board updatedBoard;
             int columnsNum;
             int rowsNum;
             bool isAgainstComputer;
@@ -17,14 +18,14 @@ namespace ConsoleUserInterface
 
             Console.WriteLine("Welcome!");
             Console.WriteLine("How Many Columns?");
-            columnsNum = GetBoardRowOrColNumber();
+            columnsNum = getBoardRowOrColNumber();
             Console.WriteLine("How Many Rows?");
-            rowsNum = GetBoardRowOrColNumber();
+            rowsNum = getBoardRowOrColNumber();
             Console.WriteLine("Do you want to play against computer?\n press 1 for YES\n press 0 for NO");
-            isAgainstComputer = GetYesOrNoFromUser();
+            isAgainstComputer = getYesOrNoFromUser();
             m_Game = new Game(columnsNum, rowsNum, isAgainstComputer);
             Ex02.ConsoleUtils.Screen.Clear();
-            PrintBoard(m_Game.GetBoard());
+            printBoard(m_Game.Board);
             while (stillPlaying)
             {
                 //start m_Game
@@ -37,10 +38,10 @@ namespace ConsoleUserInterface
                     Player.PlayerType playerType = m_Game.GetCurrentPlayerType();
                     Game.WinnerType winnerType = playerType == Player.PlayerType.Player1 ? Game.WinnerType.Player2 : Game.WinnerType.Player1;
                     printWinner(winnerType);
-                    bool newRound = CheckIfRunNewRound();
+                    bool newRound = checkIfRunNewRound();
                     if (newRound)
                     {
-                        InitNewGameBoard(columnsNum, rowsNum, isAgainstComputer);
+                        initNewGameBoard(columnsNum, rowsNum, isAgainstComputer);
                         continue;
                     }
                     else
@@ -50,19 +51,19 @@ namespace ConsoleUserInterface
                 }
                 else if (isValidColumsNumber(userChoice, columnsNum))
                 {
-                    m_Game.MakeMove(int.Parse(userChoice.KeyChar.ToString()), out Board.MoveResponse moveResponse);
+                    updatedBoard = m_Game.MakeMove(int.Parse(userChoice.KeyChar.ToString()), out Board.MoveResponse moveResponse);
                     if (moveResponse == Board.MoveResponse.Success)
                     {
                         Ex02.ConsoleUtils.Screen.Clear();
-                        PrintBoard(m_Game.GetBoard());
-                        Game.WinnerType winnerType = m_Game.GetWinner();
+                        printBoard(updatedBoard);
+                        Game.WinnerType winnerType = m_Game.winnerType;
                         if (winnerType != Game.WinnerType.None)
                         {
                             printWinner(winnerType);
-                            bool newRound = CheckIfRunNewRound();
+                            bool newRound = checkIfRunNewRound();
                             if (newRound)
                             {
-                                InitNewGameBoard(columnsNum, rowsNum, isAgainstComputer);
+                                initNewGameBoard(columnsNum, rowsNum, isAgainstComputer);
                                 continue;
                             }
                             else
@@ -89,18 +90,18 @@ namespace ConsoleUserInterface
             Console.WriteLine("Good bye...");
         }
 
-        private bool CheckIfRunNewRound()
+        private bool checkIfRunNewRound()
         {
             Console.WriteLine("Would you like to play another round?\n press 1 for YES\n press 0 for NO");
 
-            return GetYesOrNoFromUser();
+            return getYesOrNoFromUser();
         }
 
-        private void InitNewGameBoard(int i_ColSize, int i_RowSize, bool i_AgainstComputer)
+        private void initNewGameBoard(int i_ColSize, int i_RowSize, bool i_AgainstComputer)
         {
-            m_Game.init();
+            m_Game.Init();
             Ex02.ConsoleUtils.Screen.Clear();
-            PrintBoard(m_Game.GetBoard());
+            printBoard(m_Game.Board);
         }
 
         private void printWinner(Game.WinnerType winnerType)
@@ -117,34 +118,35 @@ namespace ConsoleUserInterface
             {
                 Console.WriteLine("\nGame ended with a draw.");
             }
+
             Console.WriteLine("\n Score board:\n Player1: {0} , Player2: {1}\n", m_Game.GetFirstPlayerScore(), m_Game.GetSecondPlayerScore());
         }
 
-        private void PrintBoard(Board i_Board)
+        private void printBoard(Board i_Board)
         {
-            for (int i = 0; i < i_Board.GetColumnSize(); i++)
+            for (int i = 0; i < i_Board.Columns; i++)
             {
                 Console.Write("  {0}  ", i + 1);
             }
 
-            for (int i = 0; i < i_Board.GetRowSize(); i++)
+            for (int i = 0; i < i_Board.Rows; i++)
             {
                 Console.WriteLine();
-                for (int j = 0; j < i_Board.GetColumnSize(); j++)
+                for (int j = 0; j < i_Board.Columns; j++)
                 {
-                    Console.Write("| {0}  ", GetPlayerSign(i_Board.GetCellPlayerType(j, i)));
+                    Console.Write("| {0}  ", getPlayerSign(i_Board.GetCellPlayerType(j, i)));
                 }
 
                 Console.Write("|");
                 Console.WriteLine();
-                for (int j = 0; j < i_Board.GetColumnSize(); j++)
+                for (int j = 0; j < i_Board.Columns; j++)
                 {
                     Console.Write("=====");
                 }
             }
         }
 
-        private char GetPlayerSign(Player.PlayerType i_PlayerType)
+        private char getPlayerSign(Player.PlayerType i_PlayerType)
         {
             if (i_PlayerType == Player.PlayerType.Player1)
             {
@@ -165,7 +167,7 @@ namespace ConsoleUserInterface
             bool valid = false;
             int num = 0;
 
-            if (Int32.TryParse(i_Input.KeyChar.ToString(), out num) || num > 0 || num <= i_ColNum)
+            if (Int32.TryParse(i_Input.KeyChar.ToString(), out num) && num > 0 && num <= i_ColNum)
             {
                 valid = true;
             }
@@ -173,7 +175,7 @@ namespace ConsoleUserInterface
             return valid;
         }
 
-        public static bool GetYesOrNoFromUser()
+        private static bool getYesOrNoFromUser()
         {
             string input = Console.ReadLine();
 
@@ -186,10 +188,11 @@ namespace ConsoleUserInterface
             return input == "1";
         }
 
-        public static int GetBoardRowOrColNumber()
+        private static int getBoardRowOrColNumber()
         {
             int num = 0;
             string input = Console.ReadLine();
+
             while (!Int32.TryParse(input, out num) || num > 8 || num < 4)
             {
                 Console.WriteLine("Invalid Input - expect to get a number between 4 and 8");
